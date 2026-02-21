@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Download, Save, ChevronLeft, ChevronRight, Target, FolderOpen, ArrowLeft, Loader2, Wand2 } from 'lucide-react';
+import { Download, Save, ChevronLeft, ChevronRight, Target, FolderOpen, ArrowLeft, Loader2, Wand2, UserCircle } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
+import { authAPI } from '../services/api';
 
 // Components
 import Stepper from '../components/Stepper';
@@ -62,7 +63,20 @@ const ResumeBuilder = () => {
     achievements: []
   });
 
+  const [user, setUser] = useState(null);
+
   const previewRef = useRef(null);
+
+  // Load user data
+  useEffect(() => {
+    const currentUser = authAPI.getCurrentUser();
+    setUser(currentUser);
+  }, []);
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
 
   // Load existing resume if resumeId is in URL
   useEffect(() => {
@@ -346,10 +360,25 @@ const ResumeBuilder = () => {
             </button>
             <button
               onClick={handleExportPDF}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Download className="w-4 h-4" />
               Export PDF
+            </button>
+            
+            {/* Profile Icon */}
+            <button
+              onClick={() => navigate('/profile')}
+              className="flex items-center gap-2 p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors ml-2 border-l border-gray-200 pl-4"
+              title="View Profile"
+            >
+              {user ? (
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                  {getInitials(user.fullName)}
+                </div>
+              ) : (
+                <UserCircle className="w-8 h-8" />
+              )}
             </button>
           </div>
         </div>

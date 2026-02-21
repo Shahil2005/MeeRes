@@ -10,9 +10,13 @@ import {
   Mail,
   AlertCircle,
   Search,
-  RefreshCw
+  RefreshCw,
+  Settings,
+  LogOut,
+  MapPin,
+  Briefcase
 } from 'lucide-react';
-import { resumeAPI } from '../services/api';
+import { resumeAPI, authAPI } from '../services/api';
 
 const SavedResumes = () => {
   const navigate = useNavigate();
@@ -21,6 +25,7 @@ const SavedResumes = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [user, setUser] = useState(null);
 
   // Fetch all resumes
   const fetchResumes = async () => {
@@ -39,9 +44,22 @@ const SavedResumes = () => {
     }
   };
 
+  // Load user data
   useEffect(() => {
+    const currentUser = authAPI.getCurrentUser();
+    setUser(currentUser);
     fetchResumes();
   }, []);
+
+  const handleLogout = () => {
+    authAPI.logout();
+    navigate('/login');
+  };
+
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
 
   // Delete a resume
   const handleDelete = async (id) => {
@@ -103,13 +121,40 @@ const SavedResumes = () => {
             <h1 className="text-2xl font-bold text-gray-900">Saved Resumes</h1>
             <p className="text-sm text-gray-500">Manage and view your saved resumes</p>
           </div>
-          <button
-            onClick={handleCreateNew}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-          >
-            <FileText className="w-4 h-4" />
-            Create New Resume
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleCreateNew}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <FileText className="w-4 h-4" />
+              Create New Resume
+            </button>
+            
+            {/* User Profile Dropdown */}
+            {user && (
+              <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="flex items-center gap-3 hover:bg-gray-50 rounded-lg p-2 transition-colors"
+                >
+                  <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    {getInitials(user.fullName)}
+                  </div>
+                  <div className="hidden sm:block text-left">
+                    <p className="text-sm font-medium text-gray-900">{user.fullName}</p>
+                    <p className="text-xs text-gray-500">{user.profile?.title || 'View Profile'}</p>
+                  </div>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Logout"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
