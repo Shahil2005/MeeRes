@@ -15,12 +15,22 @@ const ATSScore = ({ resumeData }) => {
     setError(null);
 
     try {
-      // Build resume text from data
-      const resumeText = buildResumeText(resumeData);
-      const response = await atsAPI.calculateScore(resumeText, jobDescription);
+      // Use local calculation for immediate, accurate results
+      const localResult = calculateLocalScore();
       
-      if (response.success) {
-        setResult(response);
+      // Try to get enhanced results from backend
+      try {
+        const resumeText = buildResumeText(resumeData);
+        const response = await atsAPI.calculateScore(resumeText, jobDescription);
+        
+        if (response.success && response.data) {
+          setResult(response.data);
+        } else {
+          setResult(localResult);
+        }
+      } catch (apiErr) {
+        // Fallback to local calculation if API fails
+        setResult(localResult);
       }
     } catch (err) {
       setError('Failed to calculate ATS score. Please try again.');
@@ -34,47 +44,106 @@ const ATSScore = ({ resumeData }) => {
     const parts = [];
     
     // Personal info
-    if (data.personalInfo.fullName) parts.push(data.personalInfo.fullName);
+    if (data.personalInfo?.fullName) parts.push(data.personalInfo.fullName);
     
     // Summary
     if (data.summary) parts.push(data.summary);
     
     // Skills
-    if (data.skills.length > 0) {
+    if (data.skills?.length > 0) {
       parts.push(data.skills.join(' '));
     }
     
     // Experience
-    data.experience.forEach(exp => {
-      parts.push(exp.position);
-      parts.push(exp.company);
-      parts.push(exp.bullets.join(' '));
+    data.experience?.forEach(exp => {
+      if (exp.position) parts.push(exp.position);
+      if (exp.company) parts.push(exp.company);
+      if (exp.bullets?.length > 0) parts.push(exp.bullets.join(' '));
     });
     
     // Projects
-    data.projects.forEach(proj => {
-      parts.push(proj.title);
-      parts.push(proj.description);
+    data.projects?.forEach(proj => {
+      if (proj.title) parts.push(proj.title);
+      if (proj.description) parts.push(proj.description);
       if (Array.isArray(proj.technologies)) {
         parts.push(proj.technologies.join(' '));
       }
-      parts.push(proj.bullets.join(' '));
+      if (proj.bullets?.length > 0) parts.push(proj.bullets.join(' '));
     });
     
     // Education
-    data.education.forEach(edu => {
-      parts.push(edu.degree);
-      parts.push(edu.fieldOfStudy);
-      parts.push(edu.institution);
+    data.education?.forEach(edu => {
+      if (edu.degree) parts.push(edu.degree);
+      if (edu.fieldOfStudy) parts.push(edu.fieldOfStudy);
+      if (edu.institution) parts.push(edu.institution);
     });
     
     // Certifications
-    data.certifications.forEach(cert => {
-      parts.push(cert.name);
-      parts.push(cert.issuer);
+    data.certifications?.forEach(cert => {
+      if (cert.name) parts.push(cert.name);
+      if (cert.issuer) parts.push(cert.issuer);
     });
     
-    return parts.join(' ');
+    // Achievements
+    data.achievements?.forEach(ach => {
+      if (ach.title) parts.push(ach.title);
+      if (ach.description) parts.push(ach.description);
+    });
+    
+    return parts.join(' ').toLowerCase();
+  };
+
+  // Client-side keyword matching for immediate feedback
+  const calculateLocalScore = () => {
+    if (!jobDescription.trim()) return null;
+    
+    const resumeText = buildResumeText(resumeData);
+    const jobText = jobDescription.toLowerCase();
+    
+    // Extract important keywords (words with 4+ characters, excluding common words)
+    const commonWords = new Set(['with', 'from', 'they', 'have', 'this', 'that', 'will', 'been', 'their', 'were', 'are', 'and', 'for', 'the', 'you', 'your', 'our', 'all', 'any', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'who', 'boy', 'did', 'she', 'use', 'her', 'way', 'many', 'oil', 'sit', 'set', 'run', 'eat', 'far', 'sea', 'eye', 'ago', 'off', 'too', 'any', 'say', 'man', 'try', 'ask', 'end', 'why', 'let', 'put', 'say', 'she', 'try', 'way', 'own', 'say', 'too', 'old', 'tell', 'very', 'when', 'much', 'would', 'there', 'should']);
+    
+    // Extract potential keywords from job description
+    const words = jobText.match(/\b[a-z]+\b/g) || [];
+    const wordFreq = {};
+    words.forEach(word => {
+      if (word.length >= 4 && !commonWords.has(word)) {
+        wordFreq[word] = (wordFreq[word] || 0) + 1;
+      }
+    });
+    
+    // Get top keywords (appearing multiple times or important technical terms)
+    const technicalTerms = ['javascript', 'python', 'react', 'node', 'sql', 'database', 'api', 'html', 'css', 'aws', 'azure', 'docker', 'kubernetes', 'agile', 'scrum', 'git', 'github', 'frontend', 'backend', 'fullstack', 'developer', 'engineer', 'manager', 'analyst', 'design', 'testing', 'deployment', 'cloud', 'machine', 'learning', 'artificial', 'intelligence', 'data', 'analytics', 'security', 'network', 'server', 'client', 'framework', 'library', 'component', 'interface'];
+    
+    const keywords = Object.entries(wordFreq)
+      .filter(([word, count]) => count >= 2 || technicalTerms.some(term => word.includes(term)))
+      .map(([word]) => word)
+      .slice(0, 30);
+    
+    // Check which keywords are in resume
+    const matched = [];
+    const missing = [];
+    
+    keywords.forEach(keyword => {
+      if (resumeText.includes(keyword)) {
+        matched.push(keyword);
+      } else {
+        missing.push(keyword);
+      }
+    });
+    
+    // Calculate score
+    const total = keywords.length;
+    const matchedCount = matched.length;
+    const score = total > 0 ? Math.round((matchedCount / total) * 100) : 0;
+    
+    return {
+      score,
+      matchedCount,
+      totalKeywords: total,
+      matchedKeywords: matched,
+      missingKeywords: missing.slice(0, 15) // Show top 15 missing
+    };
   };
 
   const getScoreColor = (score) => {
