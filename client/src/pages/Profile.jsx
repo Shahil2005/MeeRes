@@ -47,24 +47,23 @@ const Profile = () => {
   // Load user data on mount
   useEffect(() => {
     const currentUser = authAPI.getCurrentUser();
-    if (!currentUser) {
-      navigate('/login');
-      return;
+    if (currentUser) {
+      setUser(currentUser);
+      setFormData({
+        fullName: currentUser.fullName || '',
+        email: currentUser.email || '',
+        profile: {
+          phone: currentUser.profile?.phone || '',
+          location: currentUser.profile?.location || '',
+          title: currentUser.profile?.title || '',
+          bio: currentUser.profile?.bio || '',
+          linkedIn: currentUser.profile?.linkedIn || '',
+          github: currentUser.profile?.github || '',
+          website: currentUser.profile?.website || ''
+        }
+      });
     }
-    setUser(currentUser);
-    setFormData({
-      fullName: currentUser.fullName || '',
-      email: currentUser.email || '',
-      profile: {
-        phone: currentUser.profile?.phone || '',
-        location: currentUser.profile?.location || '',
-        title: currentUser.profile?.title || '',
-        bio: currentUser.profile?.bio || '',
-        linkedIn: currentUser.profile?.linkedIn || '',
-        github: currentUser.profile?.github || '',
-        website: currentUser.profile?.website || ''
-      }
-    });
+    // If no user, show empty profile (don't redirect - let user see the page)
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -119,36 +118,47 @@ const Profile = () => {
     navigate('/login');
   };
 
-  const handleCancel = () => {
-    setFormData({
-      fullName: user?.fullName || '',
-      email: user?.email || '',
-      profile: {
-        phone: user?.profile?.phone || '',
-        location: user?.profile?.location || '',
-        title: user?.profile?.title || '',
-        bio: user?.profile?.bio || '',
-        linkedIn: user?.profile?.linkedIn || '',
-        github: user?.profile?.github || '',
-        website: user?.profile?.website || ''
-      }
-    });
-    setIsEditing(false);
-    setError('');
-  };
-
   const getInitials = (name) => {
     if (!name) return 'U';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-      </div>
-    );
-  }
+  // Default user for display when not logged in
+  const displayUser = user || {
+    fullName: 'Guest User',
+    email: 'Not logged in',
+    profile: {
+      title: 'Please log in to view your profile',
+      phone: '',
+      location: '',
+      bio: '',
+      linkedIn: '',
+      github: '',
+      website: ''
+    },
+    stats: {
+      totalResumes: 0
+    },
+    createdAt: null
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      fullName: displayUser?.fullName || '',
+      email: displayUser?.email || '',
+      profile: {
+        phone: displayUser?.profile?.phone || '',
+        location: displayUser?.profile?.location || '',
+        title: displayUser?.profile?.title || '',
+        bio: displayUser?.profile?.bio || '',
+        linkedIn: displayUser?.profile?.linkedIn || '',
+        github: displayUser?.profile?.github || '',
+        website: displayUser?.profile?.website || ''
+      }
+    });
+    setIsEditing(false);
+    setError('');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -204,14 +214,14 @@ const Profile = () => {
               <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-center">
                 <div className="relative inline-block">
                   <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-3xl font-bold text-blue-600 mx-auto shadow-lg">
-                    {getInitials(user.fullName)}
+                    {getInitials(displayUser.fullName)}
                   </div>
                   <button className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow">
                     <Camera className="w-4 h-4 text-gray-600" />
                   </button>
                 </div>
-                <h2 className="mt-4 text-xl font-bold text-white">{user.fullName}</h2>
-                <p className="text-blue-100">{user.profile?.title || 'No title set'}</p>
+                <h2 className="mt-4 text-xl font-bold text-white">{displayUser.fullName}</h2>
+                <p className="text-blue-100">{displayUser.profile?.title || 'No title set'}</p>
               </div>
 
               {/* Quick Stats */}
@@ -219,13 +229,13 @@ const Profile = () => {
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div className="p-3 bg-gray-50 rounded-lg">
                     <FileText className="w-5 h-5 text-blue-600 mx-auto mb-1" />
-                    <p className="text-2xl font-bold text-gray-900">{user.stats?.totalResumes || 0}</p>
+                    <p className="text-2xl font-bold text-gray-900">{displayUser.stats?.totalResumes || 0}</p>
                     <p className="text-xs text-gray-500">Resumes</p>
                   </div>
                   <div className="p-3 bg-gray-50 rounded-lg">
                     <Calendar className="w-5 h-5 text-green-600 mx-auto mb-1" />
                     <p className="text-2xl font-bold text-gray-900">
-                      {user.createdAt ? new Date(user.createdAt).getFullYear() : '-'}
+                      {displayUser.createdAt ? new Date(displayUser.createdAt).getFullYear() : '-'}
                     </p>
                     <p className="text-xs text-gray-500">Member Since</p>
                   </div>
@@ -233,22 +243,22 @@ const Profile = () => {
 
                 {/* Social Links */}
                 <div className="mt-6 space-y-3">
-                  {user.profile?.linkedIn && (
-                    <a href={user.profile.linkedIn} target="_blank" rel="noopener noreferrer" 
+                  {displayUser.profile?.linkedIn && (
+                    <a href={displayUser.profile.linkedIn} target="_blank" rel="noopener noreferrer" 
                        className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors">
                       <Linkedin className="w-5 h-5" />
                       <span className="text-sm truncate">LinkedIn Profile</span>
                     </a>
                   )}
-                  {user.profile?.github && (
-                    <a href={user.profile.github} target="_blank" rel="noopener noreferrer"
+                  {displayUser.profile?.github && (
+                    <a href={displayUser.profile.github} target="_blank" rel="noopener noreferrer"
                        className="flex items-center gap-3 text-gray-600 hover:text-gray-900 transition-colors">
                       <Github className="w-5 h-5" />
                       <span className="text-sm truncate">GitHub Profile</span>
                     </a>
                   )}
-                  {user.profile?.website && (
-                    <a href={user.profile.website} target="_blank" rel="noopener noreferrer"
+                  {displayUser.profile?.website && (
+                    <a href={displayUser.profile.website} target="_blank" rel="noopener noreferrer"
                        className="flex items-center gap-3 text-gray-600 hover:text-green-600 transition-colors">
                       <Globe className="w-5 h-5" />
                       <span className="text-sm truncate">Personal Website</span>
@@ -256,14 +266,23 @@ const Profile = () => {
                   )}
                 </div>
 
-                {/* Edit Button */}
-                {!isEditing && (
+                {/* Edit Button - only show if user is logged in */}
+                {!isEditing && user && (
                   <button
                     onClick={() => setIsEditing(true)}
                     className="w-full mt-6 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
                     Edit Profile
+                  </button>
+                )}
+                {!user && (
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="w-full mt-6 flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Login to Edit
                   </button>
                 )}
               </div>
@@ -300,7 +319,7 @@ const Profile = () => {
                         required
                       />
                     ) : (
-                      <p className="text-gray-900 py-2">{user.fullName}</p>
+                      <p className="text-gray-900 py-2">{displayUser.fullName}</p>
                     )}
                   </div>
 
@@ -320,7 +339,7 @@ const Profile = () => {
                         required
                       />
                     ) : (
-                      <p className="text-gray-900 py-2">{user.email}</p>
+                      <p className="text-gray-900 py-2">{displayUser.email}</p>
                     )}
                   </div>
 
@@ -340,7 +359,7 @@ const Profile = () => {
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       />
                     ) : (
-                      <p className="text-gray-900 py-2">{user.profile?.title || 'Not set'}</p>
+                      <p className="text-gray-900 py-2">{displayUser.profile?.title || 'Not set'}</p>
                     )}
                   </div>
 
@@ -360,7 +379,7 @@ const Profile = () => {
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       />
                     ) : (
-                      <p className="text-gray-900 py-2">{user.profile?.phone || 'Not set'}</p>
+                      <p className="text-gray-900 py-2">{displayUser.profile?.phone || 'Not set'}</p>
                     )}
                   </div>
 
@@ -380,7 +399,7 @@ const Profile = () => {
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       />
                     ) : (
-                      <p className="text-gray-900 py-2">{user.profile?.location || 'Not set'}</p>
+                      <p className="text-gray-900 py-2">{displayUser.profile?.location || 'Not set'}</p>
                     )}
                   </div>
 
@@ -399,7 +418,7 @@ const Profile = () => {
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
                       />
                     ) : (
-                      <p className="text-gray-900 py-2">{user.profile?.bio || 'No bio added yet'}</p>
+                      <p className="text-gray-900 py-2">{displayUser.profile?.bio || 'No bio added yet'}</p>
                     )}
                   </div>
 
@@ -419,7 +438,7 @@ const Profile = () => {
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       />
                     ) : (
-                      <p className="text-gray-900 py-2 truncate">{user.profile?.linkedIn || 'Not set'}</p>
+                      <p className="text-gray-900 py-2 truncate">{displayUser.profile?.linkedIn || 'Not set'}</p>
                     )}
                   </div>
 
@@ -439,7 +458,7 @@ const Profile = () => {
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       />
                     ) : (
-                      <p className="text-gray-900 py-2 truncate">{user.profile?.github || 'Not set'}</p>
+                      <p className="text-gray-900 py-2 truncate">{displayUser.profile?.github || 'Not set'}</p>
                     )}
                   </div>
 
@@ -459,7 +478,7 @@ const Profile = () => {
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       />
                     ) : (
-                      <p className="text-gray-900 py-2 truncate">{user.profile?.website || 'Not set'}</p>
+                      <p className="text-gray-900 py-2 truncate">{displayUser.profile?.website || 'Not set'}</p>
                     )}
                   </div>
                 </div>

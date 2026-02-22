@@ -32,10 +32,32 @@ const Login = () => {
       // localStorage.setItem('token', response.token);
       // localStorage.setItem('user', JSON.stringify(response.user));
       
-      // Simulate API call
+      // Simulate API call - create a mock user for demo
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // For now, just navigate to home
+      // Create mock user data and store it
+      const mockUser = {
+        fullName: formData.email.split('@')[0].replace(/\./g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        email: formData.email,
+        profile: {
+          phone: '',
+          location: '',
+          title: '',
+          bio: '',
+          linkedIn: '',
+          github: '',
+          website: ''
+        },
+        stats: {
+          totalResumes: 0,
+          lastActive: new Date().toISOString()
+        },
+        createdAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem('token', 'mock-token-' + Date.now());
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      
       navigate('/');
     } catch (err) {
       setError(err.message || 'Invalid email or password');
