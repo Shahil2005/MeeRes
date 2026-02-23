@@ -185,11 +185,27 @@ const OnePageResume = ({ resumeData, onOptimized, onClose }) => {
   const handleDownloadPDF = async () => {
     if (!optimizedHTML) return;
 
+    // Create a container with proper styling
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = '794px';
+    
+    // Create the resume element with inline styles
     const element = document.createElement('div');
+    element.style.width = '210mm';
+    element.style.minHeight = '297mm';
+    element.style.padding = '10mm';
+    element.style.boxSizing = 'border-box';
+    element.style.fontFamily = "Arial, Helvetica, sans-serif";
+    element.style.fontSize = '9px';
+    element.style.lineHeight = '1.25';
+    element.style.backgroundColor = 'white';
     element.innerHTML = optimizedHTML;
-    element.style.position = 'absolute';
-    element.style.left = '-9999px';
-    document.body.appendChild(element);
+    
+    container.appendChild(element);
+    document.body.appendChild(container);
 
     try {
       const html2pdf = (await import('html2pdf.js')).default;
@@ -203,6 +219,7 @@ const OnePageResume = ({ resumeData, onOptimized, onClose }) => {
           useCORS: true,
           letterRendering: true,
           width: 794,
+          height: 1123,
           windowWidth: 794
         },
         jsPDF: { 
@@ -218,7 +235,7 @@ const OnePageResume = ({ resumeData, onOptimized, onClose }) => {
       console.error('PDF generation error:', err);
       setError('Failed to generate PDF. Please try again.');
     } finally {
-      document.body.removeChild(element);
+      document.body.removeChild(container);
     }
   };
 
