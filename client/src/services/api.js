@@ -177,4 +177,21 @@ export const authAPI = {
   }
 };
 
+// Resume Optimization API
+export const optimizationAPI = {
+  // Optimize resume for one-page format
+  optimizeResume: async (resumeData, options = {}) => {
+    try {
+      const response = await api.post('/resume/optimize', {
+        resumeData,
+        options
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Resume optimization error:', error);
+      throw error;
+    }
+  }
+};
+
 export default api;

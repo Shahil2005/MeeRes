@@ -15,11 +15,11 @@ import {
   Loader2,
   FileText,
   Calendar,
-  LogOut,
-  ArrowLeft,
-  Camera
+  Camera,
+  LogOut
 } from 'lucide-react';
 import { authAPI } from '../services/api';
+import Navigation from '../components/Navigation';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -162,31 +162,15 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/saved')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>Back to Resumes</span>
-            </button>
-          </div>
-          <h1 className="text-xl font-bold text-gray-900">My Profile</h1>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Logout</span>
-          </button>
-        </div>
-      </header>
+      {/* Navigation */}
+      <Navigation 
+        title="My Profile"
+        showMenuButton={true}
+        showProfile={false}
+      />
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-4 py-8 pt-20">
         {/* Success/Error Messages */}
         {successMessage && (
           <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 text-green-700">

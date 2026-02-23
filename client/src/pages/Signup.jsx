@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, User } from 'lucide-react';
+import Navigation from '../components/Navigation';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -94,7 +95,14 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Navigation */}
+      <Navigation 
+        showMenuButton={true}
+        showProfile={false}
+      />
+      
+      <div className="flex items-center justify-center p-4 pt-20">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
@@ -301,6 +309,7 @@ const Signup = () => {
             Sign in
           </Link>
         </p>
+      </div>
       </div>
     </div>
   );
