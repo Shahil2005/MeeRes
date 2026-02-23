@@ -14,7 +14,7 @@ import {
   MapPin,
   Briefcase
 } from 'lucide-react';
-import { resumeAPI } from '../services/api';
+import { resumeAPI, authAPI } from '../services/api';
 import Navigation from '../components/Navigation';
 
 const SavedResumes = () => {

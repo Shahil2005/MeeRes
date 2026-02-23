@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Download, Save, ChevronLeft, ChevronRight, ArrowLeft, Loader2, Wand2, UserCircle, FileOutput, Target } from 'lucide-react';
+import { Download, Save, ChevronLeft, ChevronRight, ArrowLeft, Loader2, Wand2, UserCircle, FileOutput, Target, FileCheck, X } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 import { authAPI } from '../services/api';
 import Navigation from '../components/Navigation';
@@ -375,7 +375,39 @@ const ResumeBuilder = () => {
           </div>
 
           {/* Right Column - Preview */}
-          <div className="lg:sticky lg:top-32 lg:h-fit">
+          <div className="lg:sticky lg:top-32 lg:h-fit space-y-4">
+            {/* AI Optimize Button */}
+            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg p-4 text-white">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                  <Wand2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">AI Optimize</h3>
+                  <p className="text-sm text-purple-100">Enhance your resume with AI</p>
+                </div>
+              </div>
+              <p className="text-sm text-purple-100 mb-4">
+                Get professional optimization for your entire resume with ATS-friendly formatting.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowOptimizer(true)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-white text-purple-600 rounded-lg font-medium hover:bg-purple-50 transition-colors"
+                >
+                  <Wand2 className="w-4 h-4" />
+                  Enhance Content
+                </button>
+                <button
+                  onClick={() => setShowOnePageOptimizer(true)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-purple-700 text-white rounded-lg font-medium hover:bg-purple-800 transition-colors"
+                >
+                  <FileOutput className="w-4 h-4" />
+                  1-Page Format
+                </button>
+              </div>
+            </div>
+
             <div className="bg-gray-100 rounded-lg p-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-medium text-gray-700">Live Preview</h3>
