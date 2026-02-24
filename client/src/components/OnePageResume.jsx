@@ -93,10 +93,10 @@ const OnePageResume = ({ resumeData, onOptimized, onClose }) => {
     const { personalInfo, summary, education, skills, projects, experience, certifications } = data;
     
     return `
-      <div class="optimized-resume" style="font-family: Arial, sans-serif; font-size: 11px; line-height: 1.35; padding: 12mm; width: 210mm;">
-        <div style="text-align: center; border-bottom: 2px solid #1e293b; padding-bottom: 8px; margin-bottom: 12px;">
-          <h1 style="font-size: 20px; font-weight: bold; color: #1e293b; margin: 0 0 4px 0;">${personalInfo?.fullName || 'Your Name'}</h1>
-          <div style="font-size: 9.5px; color: #475569;">
+      <div class="optimized-resume" style="font-family: 'Calibri', Arial, sans-serif; font-size: 10.5px; line-height: 1.4; padding: 0; width: 100%; color: #333333;">
+        <div style="text-align: center; margin-bottom: 12px;">
+          <h1 style="font-size: 22px; font-weight: bold; color: #1a1a1a; margin: 0 0 4px 0;">${personalInfo?.fullName || 'Your Name'}</h1>
+          <div style="font-size: 10.5px; color: #333333; line-height: 1.4;">
             ${personalInfo?.email || ''}${personalInfo?.email && personalInfo?.phone ? ' | ' : ''}${personalInfo?.phone || ''}
             ${(personalInfo?.email || personalInfo?.phone) && personalInfo?.location ? ' | ' : ''}${personalInfo?.location || ''}
           </div>
@@ -104,24 +104,24 @@ const OnePageResume = ({ resumeData, onOptimized, onClose }) => {
 
         ${summary ? `
         <div style="margin-bottom: 10px;">
-          <h2 style="font-size: 11px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 6px; color: #1e293b;">Professional Summary</h2>
-          <p style="margin: 0;">${summary}</p>
+          <h2 style="font-size: 12px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000000; padding-bottom: 2px; margin: 12px 0 6px 0; color: #1a1a1a; letter-spacing: 0.5px;">Professional Summary</h2>
+          <p style="margin: 0; font-size: 10.5px; line-height: 1.4;">${summary}</p>
         </div>
         ` : ''}
 
         ${experience?.length > 0 ? `
         <div style="margin-bottom: 10px;">
-          <h2 style="font-size: 11px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 6px; color: #1e293b;">Experience</h2>
-          ${experience.slice(0, 3).map(exp => `
-            <div style="margin-bottom: 6px;">
-              <div style="display: flex; justify-content: space-between; font-weight: 600;">
+          <h2 style="font-size: 12px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000000; padding-bottom: 2px; margin: 12px 0 6px 0; color: #1a1a1a; letter-spacing: 0.5px;">Experience</h2>
+          ${experience.map(exp => `
+            <div style="margin-bottom: 8px;">
+              <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 11px; color: #1a1a1a;">
                 <span>${exp.position}</span>
-                <span style="font-style: italic; color: #64748b; font-weight: normal;">${exp.startDate || ''} - ${exp.endDate || 'Present'}</span>
+                <span style="font-style: italic; color: #333333; font-weight: normal;">${exp.startDate || ''} - ${exp.endDate || 'Present'}</span>
               </div>
-              <div style="font-style: italic; color: #475569;">${exp.company}${exp.location ? ', ' + exp.location : ''}</div>
+              <div style="font-style: italic; color: #333333; font-size: 10.5px; margin-bottom: 2px;">${exp.company}${exp.location ? ', ' + exp.location : ''}</div>
               ${exp.bullets?.filter(b => b.trim()).length > 0 ? `
-                <ul style="margin: 2px 0 0 14px; padding: 0;">
-                  ${exp.bullets.filter(b => b.trim()).slice(0, 2).map(b => `<li style="margin-bottom: 1px;">${b}</li>`).join('')}
+                <ul style="margin: 3px 0 0 16px; padding: 0; list-style-type: disc;">
+                  ${exp.bullets.filter(b => b.trim()).map(b => `<li style="margin-bottom: 2px; font-size: 10.5px; line-height: 1.4;">${b}</li>`).join('')}
                 </ul>
               ` : ''}
             </div>
@@ -131,14 +131,14 @@ const OnePageResume = ({ resumeData, onOptimized, onClose }) => {
 
         ${education?.length > 0 ? `
         <div style="margin-bottom: 10px;">
-          <h2 style="font-size: 11px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 6px; color: #1e293b;">Education</h2>
-          ${education.slice(0, 2).map(edu => `
+          <h2 style="font-size: 12px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000000; padding-bottom: 2px; margin: 12px 0 6px 0; color: #1a1a1a; letter-spacing: 0.5px;">Education</h2>
+          ${education.map(edu => `
             <div style="margin-bottom: 6px;">
-              <div style="display: flex; justify-content: space-between; font-weight: 600;">
+              <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 11px; color: #1a1a1a;">
                 <span>${edu.degree}${edu.fieldOfStudy ? ' in ' + edu.fieldOfStudy : ''}</span>
-                <span style="font-style: italic; color: #64748b; font-weight: normal;">${edu.startDate || ''} - ${edu.endDate || 'Present'}</span>
+                <span style="font-style: italic; color: #333333; font-weight: normal;">${edu.startDate || ''} - ${edu.endDate || 'Present'}</span>
               </div>
-              <div style="font-style: italic; color: #475569;">${edu.institution}</div>
+              <div style="font-style: italic; color: #333333; font-size: 10.5px;">${edu.institution}</div>
             </div>
           `).join('')}
         </div>
@@ -146,21 +146,21 @@ const OnePageResume = ({ resumeData, onOptimized, onClose }) => {
 
         ${skills?.length > 0 ? `
         <div style="margin-bottom: 10px;">
-          <h2 style="font-size: 11px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 6px; color: #1e293b;">Skills</h2>
-          <p style="margin: 0;">${skills.join(', ')}</p>
+          <h2 style="font-size: 12px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000000; padding-bottom: 2px; margin: 12px 0 6px 0; color: #1a1a1a; letter-spacing: 0.5px;">Skills</h2>
+          <p style="margin: 0; font-size: 10.5px; line-height: 1.5;">${skills.join(', ')}</p>
         </div>
         ` : ''}
 
         ${projects?.length > 0 ? `
         <div style="margin-bottom: 10px;">
-          <h2 style="font-size: 11px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 6px; color: #1e293b;">Projects</h2>
-          ${projects.slice(0, 2).map(proj => `
+          <h2 style="font-size: 12px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000000; padding-bottom: 2px; margin: 12px 0 6px 0; color: #1a1a1a; letter-spacing: 0.5px;">Projects</h2>
+          ${projects.map(proj => `
             <div style="margin-bottom: 6px;">
-              <div style="font-weight: 600;">${proj.title}</div>
-              ${proj.technologies?.length > 0 ? `<div style="font-size: 9px; color: #64748b;">Tech: ${Array.isArray(proj.technologies) ? proj.technologies.join(', ') : proj.technologies}</div>` : ''}
+              <div style="font-weight: bold; font-size: 11px; color: #1a1a1a;">${proj.title}</div>
+              ${proj.technologies?.length > 0 ? `<div style="font-size: 10px; color: #333333; font-style: italic;">Technologies: ${Array.isArray(proj.technologies) ? proj.technologies.join(', ') : proj.technologies}</div>` : ''}
               ${proj.bullets?.filter(b => b.trim()).length > 0 ? `
-                <ul style="margin: 2px 0 0 14px; padding: 0;">
-                  ${proj.bullets.filter(b => b.trim()).slice(0, 2).map(b => `<li style="margin-bottom: 1px;">${b}</li>`).join('')}
+                <ul style="margin: 2px 0 0 16px; padding: 0; list-style-type: disc;">
+                  ${proj.bullets.filter(b => b.trim()).map(b => `<li style="margin-bottom: 2px; font-size: 10.5px; line-height: 1.4;">${b}</li>`).join('')}
                 </ul>
               ` : ''}
             </div>
@@ -170,10 +170,10 @@ const OnePageResume = ({ resumeData, onOptimized, onClose }) => {
 
         ${certifications?.length > 0 ? `
         <div style="margin-bottom: 10px;">
-          <h2 style="font-size: 11px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; margin-bottom: 6px; color: #1e293b;">Certifications</h2>
-          <ul style="margin: 0 0 0 14px; padding: 0;">
-            ${certifications.slice(0, 3).map(cert => `
-              <li style="margin-bottom: 1px;">${cert.name}${cert.issuer ? ' - ' + cert.issuer : ''}${cert.date ? ' (' + cert.date + ')' : ''}</li>
+          <h2 style="font-size: 12px; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000000; padding-bottom: 2px; margin: 12px 0 6px 0; color: #1a1a1a; letter-spacing: 0.5px;">Certifications</h2>
+          <ul style="margin: 0 0 0 16px; padding: 0; list-style-type: disc;">
+            ${certifications.map(cert => `
+              <li style="margin-bottom: 2px; font-size: 10.5px; line-height: 1.4;">${cert.name}${cert.issuer ? ' - ' + cert.issuer : ''}${cert.date ? ' (' + cert.date + ')' : ''}</li>
             `).join('')}
           </ul>
         </div>
@@ -192,16 +192,17 @@ const OnePageResume = ({ resumeData, onOptimized, onClose }) => {
     container.style.top = '0';
     container.style.width = '794px';
     
-    // Create the resume element with inline styles
+    // Create the resume element with professional ATS-friendly inline styles
     const element = document.createElement('div');
     element.style.width = '210mm';
     element.style.minHeight = '297mm';
-    element.style.padding = '10mm';
+    element.style.padding = '15mm 20mm';
     element.style.boxSizing = 'border-box';
-    element.style.fontFamily = "Arial, Helvetica, sans-serif";
-    element.style.fontSize = '9px';
-    element.style.lineHeight = '1.25';
+    element.style.fontFamily = "'Calibri', 'Arial', 'Helvetica', sans-serif";
+    element.style.fontSize = '10.5px';
+    element.style.lineHeight = '1.4';
     element.style.backgroundColor = 'white';
+    element.style.color = '#333333';
     element.innerHTML = optimizedHTML;
     
     container.appendChild(element);
